@@ -1,5 +1,8 @@
 from Pilha import Pilha
 import random
+import os
+import keyboard
+import time
 
 question = int(input("Quantos números diferentes serão distribuídos entre as pilhas? Escolha de 1 a 7: "))
 
@@ -7,37 +10,66 @@ if question < 1 or question > 7:
     print("Por favor, escolha um número entre 1 e 7.")
 else:
     num_pilhas = (question + 2) + 1
-    pilhas = {f"p{i}": Pilha(3) for i in range(1, num_pilhas)}
+    pilhas = [Pilha(3) for i in range(1, num_pilhas)]
 
     available_numbers = list(range(1, question + 1)) * 4 
 
-    for p in pilhas.values(): 
+    for p in pilhas: 
         random.shuffle(available_numbers)  
         for i in range(4):
             if available_numbers:
                 num = available_numbers.pop()  
                 p.Empilha(num)
 
-print("====================================")
-print("             JOGO PILHA             ")
-print("====================================\n")
-print("               AÇÕES                \n")
-print("1 - REMOVER ELEMENTO EM UMA PILHA PARA COLOCAR EM OUTRO")
-print("2 - VER PILHAS")
-print("3 - SAIR\n")
 
 question = None
 
-while question != 3:
 
-    print("====================================")
-    print("            JOGO DO COPO            ")
-    print("====================================\n")
-    print("               AÇÕES                \n")
-    print("1 - REMOVER ELEMENTO EM UMA PILHA PARA COLOCAR EM OUTRO")
-    print("2 - VER PILHAS")
-    print("3 - SAIR\n")
-    question = int(input("Qual dessas opções você escolhe? "));
+def center(texto):
+    return texto.center(os.get_terminal_size().columns)
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+cursor = 0 
+    
+def frame(cursor):
+    
+    clear()
+    print(center("====================================\n"))
+    print(center("JOGO PILHA\n"))
+    print(center("====================================\n"))
+    print("\n")
+
+    for i in range(3, -1, -1):
+        linha = ''
+        for pilha in pilhas:
+            elem = pilha.elem[i] if pilha.elem[i] is not None else " "  # Se o elemento for None, substituímos por um espaço em branco
+            linha += f" |   {elem:^3}   | "
+        print(center(linha))
+
+    linha = ''
+    linha_cursor = ''
+    for i in range(len(pilhas)):
+        linha += " +---------+ "  # Base da pilha
+        if i == cursor:
+            linha_cursor += '      ^      '
+        else:
+            linha_cursor += '             '
+    print(center(linha))
+    print(center(linha_cursor))
+
+    key = keyboard.read_key()
+
+    if key == 'd':
+        cursor += 1
+
+        if cursor >= len(pilhas):
+            cursor = 0
+
+    if key == 'a':
+        cursor -= 1
+
+    frame(cursor)
 
     if question == 1:
 
@@ -71,21 +103,4 @@ while question != 3:
                 print(f"A pilha {pilha_inserir} está cheia. Não é possível inserir mais elementos.")         
         else:
             print("A pilha selecionada não existe ou está vazia.")
-
-    elif question == 2:
-        print("\n")
-        print("Pilhas:")
-        for chave, valor in pilhas.items():
-            print("\n")
-            print(f"Pilha {chave}:")
-            print("\n")
-            for i in range(3, -1, -1):
-                if i <= valor.topo:
-                    elem = valor.elem[i] if valor.elem[i] is not None else " "  # Se o elemento for None, substituímos por um espaço em branco
-                    print(f"|   {elem:^3}   |")
-                else:
-                    print(f"|{' ':^9}|")
-            print("+---------+")  # Base da pilha
-
-    else:
-        question = 3
+frame(cursor)
