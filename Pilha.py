@@ -29,19 +29,3 @@ class Pilha:
             if self.PilhaVazia():
                 self.InicializaPilha()
 
-# p = Pilha(3)
-# print("Pilha vazia?", p.PilhaVazia())  
-# p.Empilha(1)
-# p.Empilha(20)
-# p.Empilha(30)
-# print("Pilha cheia?", p.PilhaCheia())  
-# print("Elemento do topo:", p.ElementoDoTopo())
-# p.Desempilha()
-# p.Desempilha()
-# p.Desempilha()
-# print("Pilha cheia?", p.PilhaCheia())    
-# print("Pilha vazia?", p.PilhaCheia())
-
-
-#pilhas['p1'].insere_pilha(1)  # Insere na pilha p1
-#print("Elemento do topo da pilha p1:", pilhas['p1'].elemento_topo())  # Saída: 1
