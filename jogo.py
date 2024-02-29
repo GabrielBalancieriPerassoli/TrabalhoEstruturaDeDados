@@ -31,25 +31,34 @@ def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
 
 cursor = 0 
+selecionado = None 
+running = True 
     
-def frame(cursor):
-    
+while running:
     clear()
     print(center("====================================\n"))
     print(center("JOGO PILHA\n"))
     print(center("====================================\n"))
     print("\n")
 
-    for i in range(3, -1, -1):
+    linha = ''
+    for i in range(len(pilhas)): #printa o numero selecionado a cima das pilhas 
+        if i == cursor and selecionado != None:
+            linha += f'      {selecionado}      '
+        else:
+            linha += '             '    
+    print(center(linha)) 
+
+    for i in range(3, -1, -1): #printa as pilhas
         linha = ''
         for pilha in pilhas:
-            elem = pilha.elem[i] if pilha.elem[i] is not None else " "  # Se o elemento for None, substituímos por um espaço em branco
+            elem = pilha.Pegar(i) if pilha.Pegar(i) is not None else " "  # Se o elemento for None, substituímos por um espaço em branco
             linha += f" |   {elem:^3}   | "
         print(center(linha))
 
     linha = ''
     linha_cursor = ''
-    for i in range(len(pilhas)):
+    for i in range(len(pilhas)): #printa o cursor e a base de pilha
         linha += " +---------+ "  # Base da pilha
         if i == cursor:
             linha_cursor += '      ^      '
@@ -58,49 +67,43 @@ def frame(cursor):
     print(center(linha))
     print(center(linha_cursor))
 
-    key = keyboard.read_key()
+    event = keyboard.read_event()
+    key = event.name
 
-    if key == 'd':
+    if event.event_type != 'down':
+        continue
+
+    if key.isnumeric():
+        cursor = (int(key) - 1) % len(pilhas)
+    elif key in ['d', 'right']:
         cursor += 1
-
+    
         if cursor >= len(pilhas):
             cursor = 0
-
-    if key == 'a':
+    elif key in ['a', 'left']:
         cursor -= 1
 
-    frame(cursor)
+        if cursor < 0:
+            cursor = len(pilhas)
+    elif key == 'up':
+        if pilhas[cursor].PilhaVazia(): continue
 
-    if question == 1:
+        selecionado = pilhas[cursor].Desempilha()
+    elif key == 'down':
+        if pilhas[cursor].PilhaCheia(): continue
 
-        pilha_remover = input(f"De qual pilha você quer remover um elemento? p1 a p{num_pilhas}: ")
+        pilhas[cursor].Empilha(selecionado)
+        selecionado = None
+    elif key in ['enter', 'space']:
+        if selecionado == None:
+            if pilhas[cursor].PilhaVazia(): continue
 
-        if pilha_remover in pilhas and not pilhas[pilha_remover].PilhaVazia():
-
-            pilha_inserir = input(f"Em qual pilha você quer inserir o elemento removido? p1 a p{num_pilhas}: ")
-
-            if pilha_inserir in pilhas and not pilhas[pilha_inserir].PilhaCheia():
-
-                if pilhas[pilha_inserir].PilhaVazia():
-
-                    x = pilhas[pilha_remover].ElementoDoTopo()
-                    pilhas[pilha_remover].Desempilha()
-
-                    pilhas[pilha_inserir].Empilha(x)
-                    print(f"Elemento {x} inserido na pilha {pilha_inserir}.")
-
-                elif pilhas[pilha_remover].ElementoDoTopo() == pilhas[pilha_inserir].ElementoDoTopo():
-
-                    x = pilhas[pilha_remover].ElementoDoTopo()
-                    pilhas[pilha_remover].Desempilha()
-
-                    pilhas[pilha_inserir].Empilha(x)
-                    print(f"Elemento {x} inserido na pilha {pilha_inserir}.")
-
-                else:
-                    print(f"Elemento do Topo da Pilha de Origem não é o mesmo da Destino.")
-            else:
-                print(f"A pilha {pilha_inserir} está cheia. Não é possível inserir mais elementos.")         
+            selecionado = pilhas[cursor].Desempilha()
         else:
-            print("A pilha selecionada não existe ou está vazia.")
-frame(cursor)
+            if pilhas[cursor].PilhaCheia(): continue
+
+            pilhas[cursor].Empilha(selecionado)
+            selecionado = None
+    elif key == 'esc':
+        running = False
+

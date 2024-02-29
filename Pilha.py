@@ -28,4 +28,8 @@ class Pilha:
             self.topo -= 1
             if self.PilhaVazia():
                 self.InicializaPilha()
+            return x
+    def Pegar(self, i):
+        if not self.PilhaVazia() and self.topo >= i:
+            return self.elem[i]
 
