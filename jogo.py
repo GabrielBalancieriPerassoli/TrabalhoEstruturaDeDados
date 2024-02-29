@@ -85,11 +85,11 @@ while running:
 
         if cursor < 0:
             cursor = len(pilhas)
-    elif key == 'up':
+    elif key in ['w', 'up']:
         if pilhas[cursor].PilhaVazia() or selecionado != None: continue
 
         selecionado = pilhas[cursor].Desempilha()
-    elif key == 'down':
+    elif key in ['s', 'down']:
         if pilhas[cursor].PilhaCheia(): continue
 
         pilhas[cursor].Empilha(selecionado)
