@@ -10,7 +10,7 @@ if question < 1 or question > 7:
     print("Por favor, escolha um número entre 1 e 7.")
 else:
     num_pilhas = (question + 2) + 1
-    pilhas = [Pilha(3) for i in range(1, num_pilhas)]
+    pilhas = [Pilha(4) for i in range(1, num_pilhas)]
 
     available_numbers = list(range(1, question + 1)) * 4 
 
@@ -32,57 +32,30 @@ running = True
     
 def seleciona():
     global selecionado, cursor
+    print(cursor)
     if selecionado is None:
         if not pilhas[cursor].PilhaVazia():
             selecionado = pilhas[cursor].Desempilha()
 
 def guarda():
     global selecionado, cursor
-    if selecionado is not None:
-        if not pilhas[cursor].PilhaCheia(): 
-            if pilhas[cursor].PilhaVazia() or \
-                pilhas[cursor].ElementoDoTopo() == selecionado:
-                pilhas[cursor].Empilha(selecionado)
-                selecionado = None
-            else:
-                print("A troca não pode ser realizada. As condições não são atendidas.")
-        else:
-            print("A pilha está cheia. Não é possível inserir mais elementos.")
-            # Permitir devolver o elemento para a pilha de origem (OU ERA PRA PERMITIR NÃO ESTÁ FUNCIONANDO)
-            pilhas[cursor].Empilha(selecionado)
-            selecionado = None
+    if selecionado == None: return
+    if pilhas[cursor].PilhaCheia(): return
+    if pilhas[cursor].ElementoDoTopo() != selecionado and not pilhas[cursor].PilhaVazia(): return
+
+    pilhas[cursor].Empilha(selecionado)
+    selecionado = None
 
 def verificar_vitoria():
-    pilhas_vazias = 0
-    elementos_iguais = True
-    
-    for pilha in pilhas:
-        if pilha.PilhaVazia():
-            pilhas_vazias += 1 # se a pilha estiver vazia, aumenta o contador de pilhas vazias
-            continue
-        
-        elemento_anterior = None
+    for p in pilhas:
+        for i in range(1, 4):
+            anterior = p.Pegar(i - 1)
+            atual = p.Pegar(i)
+            
+            if anterior != atual:
+                return False
 
-        for i in range(4): # verifica se todos os elementos na pilha são iguais
-            elemento = pilha.Pegar(i)
-            
-            if elemento is None:
-                continue
-            
-            if elemento_anterior is not None and elemento != elemento_anterior:
-                elementos_iguais = False
-                break
-                
-            elemento_anterior = elemento
-        
-        if not elementos_iguais:  # se algum elemento na pilha for diferente, sai do loop
-            break
-    
-    if elementos_iguais and pilhas_vazias == 2: # verifica se todas as pilhas têm elementos iguais e se há exatamente duas pilhas vazias
-        return True
-    else:
-        return False            
-        
+    return True
 while running:
     clear()
     print(center("====================================\n"))
@@ -116,6 +89,10 @@ while running:
     print(center(linha))
     print(center(linha_cursor))
 
+    if verificar_vitoria():
+        print("Parabéns! Você ganhou!")
+        running = False
+
     event = keyboard.read_event()
     key = event.name
 
@@ -133,21 +110,15 @@ while running:
         cursor -= 1
 
         if cursor < 0:
-            cursor = len(pilhas)
+            cursor = len(pilhas) - 1
     elif key in ['w', 'up']:
         seleciona()
     elif key in ['s', 'down']:
         guarda()
-
-        if verificar_vitoria():
-            print("Parabéns! Você ganhou!")
-            running = False
     elif key in ['enter', 'space']:
-        seleciona()
-        guarda()
-        
-        if verificar_vitoria():
-            print("Parabéns! Você ganhou!")
-            running = False
+        if selecionado == None:
+            seleciona()
+        else:
+            guarda()
     elif key == 'esc':
         running = False

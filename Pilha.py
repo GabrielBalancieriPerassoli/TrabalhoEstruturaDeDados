@@ -1,6 +1,6 @@
 class Pilha:
     def __init__(self, tam_max):
-        self.elem = [None] * (tam_max + 1)
+        self.elem = [None] * tam_max
         self.topo = -1
         self.tam_max = tam_max
 
@@ -11,7 +11,7 @@ class Pilha:
         return self.topo == -1
 
     def PilhaCheia(self):
-        return self.topo == self.tam_max
+        return self.topo == self.tam_max - 1
 
     def ElementoDoTopo(self):
         if not self.PilhaVazia():
